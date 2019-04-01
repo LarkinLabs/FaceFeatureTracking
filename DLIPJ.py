@@ -10,9 +10,39 @@ import numpy as np
 import socket
 import json
 import pickle
+import os
 #set up UDP
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
+Cam = 0
+my_details = {  
+    'UDP_IP': UDP_IP,
+    'UDP_PORT':UDP_PORT,
+    'Cam' : Cam,
+    'Predictor' : './68.dat'
+}
+
+#Get the file name for the new file to write
+
+filename = 'config.json'
+
+# If the file name exists, write a JSON string into the file.
+if not os.path.exists('config.json'):
+    # Writing JSON data
+    with open(filename, 'w') as f:
+        json.dump(my_details, f)
+        
+with open('config.json', 'r') as f:
+    my_details = json.load(f)
+
+UDP_IP = my_details.get('UDP_IP')
+print UDP_IP
+UDP_PORT = my_details.get('UDP_PORT')
+print UDP_PORT
+Cam = my_details.get('Cam')
+print Cam
+Predictor = my_details.get('Predictor')
+print Predictor
 sock = socket.socket(socket.AF_INET, # Internet
 	socket.SOCK_DGRAM) # UDP
 # construct the argument parser and parse the arguments
@@ -25,12 +55,12 @@ sock = socket.socket(socket.AF_INET, # Internet
 # facial landmark predictor
 print("[INFO] loading facial landmark predictor...")
 detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("./68.dat")
+predictor = dlib.shape_predictor(Predictor)
 
 # initialize the video stream and sleep for a bit, allowing the
 # camera sensor to warm up
 print("[INFO] camera sensor warming up...")
-vs = VideoStream(src=1).start()
+vs = VideoStream(src=Cam).start()
 # vs = VideoStream(usePiCamera=True).start() # Raspberry Pi
 #time.sleep(2.0)
 K = [6.5308391993466671e+002, 0.0, 3.1950000000000000e+002,
